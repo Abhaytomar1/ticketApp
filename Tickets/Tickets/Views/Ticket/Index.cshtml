@@ -1,0 +1,117 @@
+﻿@model IEnumerable<Tickets.Models.Ticket>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets List</title>
+    <style>
+        /* Style the table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+            }
+
+            /* Style the search inputs in the table header */
+            .table .search-input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+    </style>
+</head>
+<body>
+    <h2>Tickets List</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th><input type="text" id="searchTicketNo" class="search-input" placeholder="Search by Ticket No"></th>
+                <th><input type="text" id="searchSubject" class="search-input" placeholder="Search by Subject"></th>
+                <th><input type="text" id="searchBody" class="search-input" placeholder="Search by Ticket Body"></th>
+                <th><input type="text" id="searchCreatedAt" class="search-input" placeholder="Search by Created At"></th>
+                <th><input type="text" id="searchPriority" class="search-input" placeholder="Search by Priority"></th>
+                <th>Actions</th>
+            </tr>
+            <tr>
+                <th>Ticket No</th>
+                <th>Subject</th>
+                <th>Ticket Body</th>
+                <th>Created At</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ticketTableBody">
+            @foreach (var ticket in Model)
+            {
+                <tr>
+                    <td>@ticket.TicketNo</td>
+                    <td>@ticket.Subject</td>
+                    <td>@ticket.TicketBody</td>
+                    <td>@ticket.CreatedAt</td>
+                    <td>@ticket.Priority</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@ticket.Id" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script>
+        // Function to filter rows based on search input
+        function filterTable() {
+            const ticketNoFilter = document.getElementById('searchTicketNo').value.toLowerCase();
+            const subjectFilter = document.getElementById('searchSubject').value.toLowerCase();
+            const bodyFilter = document.getElementById('searchBody').value.toLowerCase();
+            const createdAtFilter = document.getElementById('searchCreatedAt').value.toLowerCase();
+            const priorityFilter = document.getElementById('searchPriority').value.toLowerCase();
+
+            const rows = document.querySelectorAll('#ticketTableBody tr');
+
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const ticketNoText = cells[0].textContent.toLowerCase();
+                const subjectText = cells[1].textContent.toLowerCase();
+                const bodyText = cells[2].textContent.toLowerCase();
+                const createdAtText = cells[3].textContent.toLowerCase();
+                const priorityText = cells[4].textContent.toLowerCase();
+
+                // Check if row matches the filters
+                const matchesTicketNo = ticketNoText.includes(ticketNoFilter);
+                const matchesSubject = subjectText.includes(subjectFilter);
+                const matchesBody = bodyText.includes(bodyFilter);
+                const matchesCreatedAt = createdAtText.includes(createdAtFilter);
+                const matchesPriority = priorityText.includes(priorityFilter);
+
+                if (matchesTicketNo && matchesSubject && matchesBody && matchesCreatedAt && matchesPriority) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Attach event listeners to filter inputs
+        document.getElementById('searchTicketNo').addEventListener('input', filterTable);
+        document.getElementById('searchSubject').addEventListener('input', filterTable);
+        document.getElementById('searchBody').addEventListener('input', filterTable);
+        document.getElementById('searchCreatedAt').addEventListener('input', filterTable);
+        document.getElementById('searchPriority').addEventListener('input', filterTable);
+    </script>
+</body>
+</html>

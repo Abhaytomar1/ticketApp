@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Ticket Status";
+}
+
+<h2>Ticket Status</h2>
+
+<canvas id="statusChart" width="100" height="50"></canvas>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("GetStatusData")',
+                type: 'GET',
+                success: function (data) {
+                    var ctx = document.getElementById('statusChart').getContext('2d');
+                    var statusChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(d => d.status),
+                            datasets: [{
+                                label: 'Number of Tickets',
+                                data: data.map(d => d.count),
+                                backgroundColor: function (context) {
+                                    var index = context.dataIndex;
+                                    var status = context.chart.data.labels[index];
+
+                                    switch (status) {
+                                        case 'Open':
+                                            return 'rgba(255, 99, 132, 0.2)'; // Red
+                                        case 'Closed':
+                                            return 'rgba(54, 162, 235, 0.2)'; // Blue
+                                        case 'Pending':
+                                            return 'rgba(255, 206, 86, 0.2)'; // Yellow
+                                        case 'Resolved':
+                                            return 'rgba(75, 192, 192, 0.2)'; // Green
+                                        default:
+                                            return 'rgba(201, 203, 207, 0.2)'; // Default Gray
+                                    }
+                                },
+                                borderColor: function (context) {
+                                    var index = context.dataIndex;
+                                    var status = context.chart.data.labels[index];
+
+                                    switch (status) {
+                                        case 'Open':
+                                            return 'rgba(255, 99, 132, 1)'; // Red
+                                        case 'Closed':
+                                            return 'rgba(54, 162, 235, 1)'; // Blue
+                                        case 'Pending':
+                                            return 'rgba(255, 206, 86, 1)'; // Yellow
+                                        case 'Resolved':
+                                            return 'rgba(75, 192, 192, 1)'; // Green
+                                        default:
+                                            return 'rgba(201, 203, 207, 1)'; // Default Gray
+                                    }
+                                },
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    stacked: true
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            elements: {
+                                bar: {
+                                    barThickness: 20, // Adjust this value to control bar width
+                                    borderWidth: 2
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

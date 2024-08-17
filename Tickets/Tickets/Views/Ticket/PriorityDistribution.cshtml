@@ -1,0 +1,171 @@
+﻿@model Tickets.Models.TicketPriorityViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priority Distribution</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            margin: auto;
+        }
+
+        #priorityChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .ticket-table {
+            display: none; /* Hide tables initially */
+            margin-top: 20px;
+            width: 100%;
+        }
+
+            .ticket-table table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ticket-table th, .ticket-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .ticket-table th {
+                background-color: #f2f2f2;
+            }
+    </style>
+</head>
+<body>
+
+    <h2>Ticket Priority Distribution</h2>
+
+    <div class="chart-container">
+        <canvas id="priorityChart"></canvas>
+    </div>
+
+    <!-- Tables for displaying tickets -->
+    <div id="highTickets" class="ticket-table">
+        <h3>High Priority Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket No</th>
+                    <th>Subject</th>
+                    <th>Ticket Body</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model.HighPriorityTickets)
+                {
+                    <tr>
+                        <td>@ticket.TicketNo</td>
+                        <td>@ticket.Subject</td>
+                        <td>@ticket.TicketBody</td>
+                        <td>@ticket.CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="mediumTickets" class="ticket-table">
+        <h3>Medium Priority Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket No</th>
+                    <th>Subject</th>
+                    <th>Ticket Body</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model.MediumPriorityTickets)
+                {
+                    <tr>
+                        <td>@ticket.TicketNo</td>
+                        <td>@ticket.Subject</td>
+                        <td>@ticket.TicketBody</td>
+                        <td>@ticket.CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="lowTickets" class="ticket-table">
+        <h3>Low Priority Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket No</th>
+                    <th>Subject</th>
+                    <th>Ticket Body</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model.LowPriorityTickets)
+                {
+                    <tr>
+                        <td>@ticket.TicketNo</td>
+                        <td>@ticket.Subject</td>
+                        <td>@ticket.TicketBody</td>
+                        <td>@ticket.CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('priorityChart').getContext('2d');
+        var priorityChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['High Priority Tickets', 'Medium Priority Tickets', 'Low Priority Tickets'],
+                datasets: [{
+                    data: [@Model.HighPriorityCount, @Model.MediumPriorityCount, @Model.LowPriorityCount],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: function (event, elements) {
+                    if (elements.length > 0) {
+                        var index = elements[0].index;
+                        showTable(index);
+                    }
+                }
+            }
+        });
+
+        function showTable(index) {
+            // Hide all tables
+            document.querySelectorAll('.ticket-table').forEach(function (table) {
+                table.style.display = 'none';
+            });
+
+            // Show the selected table based on index
+            if (index === 0) {
+                document.getElementById('highTickets').style.display = 'block';
+            } else if (index === 1) {
+                document.getElementById('mediumTickets').style.display = 'block';
+            } else if (index === 2) {
+                document.getElementById('lowTickets').style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
